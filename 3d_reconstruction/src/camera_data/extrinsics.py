@@ -75,28 +75,29 @@ class ExtrinsicParameters:
         raise TypeError(f"Unsupported init type: {type(data)!r}")
     
     @__init__.register
-    def _(self, matrix: np.ndarray, position: int) -> None:
+    def _(self, matrix: np.ndarray, position: int | None = None, to_fix: bool = True) -> None:
+        self.to_fix = to_fix
         self.original_matrix = matrix
         self.matrix = matrix
         self.position = position
 
     @__init__.register
-    def _(self, matrix: np.ndarray) -> None:
-        self.original_matrix = matrix
-        self.matrix = matrix
-        self.position = None
-
-    @__init__.register
-    def _(self, matrix: list) -> None:
-        self.original_matrix = np.array(matrix)
-        self.matrix = np.array(matrix)
-        self.position = None
-
-    @__init__.register
-    def _(self, matrix: list, position: int) -> None:
+    def _(self, matrix: list, position: int | None = None, to_fix: bool = True) -> None:
+        self.to_fix = to_fix
         self.original_matrix = np.array(matrix)
         self.matrix = np.array(matrix)
         self.position = position
+
+
+    @property
+    def to_fix(self) -> bool:
+        return self._to_fix
+    
+    @to_fix.setter
+    def to_fix(self, value: bool) -> None:
+        if not isinstance(value, bool):
+            raise TypeError("to_fix must be a boolean")
+        self._to_fix = value
 
 
     @property
@@ -109,9 +110,9 @@ class ExtrinsicParameters:
             raise ValueError("Extrinsic matrix must be of shape (4, 4)")
 
         # Sadly BlenderNerF uses the inverse of the extrinsic matrix convention
-        fixed_matrix = np.linalg.inv(value)
+        if(self.to_fix): value = np.linalg.inv(value)
 
-        self._matrix = fixed_matrix
+        self._matrix = value
 
     
     @property
@@ -220,13 +221,13 @@ class ExtrinsicGroup:
         self.extrinsics = np.array(extrinsics)
 
     @__init__.register
-    def _(self, extrinsics_path: str) -> None:
+    def _(self, extrinsics_path: str, to_fix: bool = True) -> None:
         with open(extrinsics_path, 'r') as f:
             extrinsics_data = json.load(f)
         extrinsics = []
         for idx, ext in enumerate(extrinsics_data['frames']):
             transform_matrix = ext['transform_matrix']
-            extrinsics.append(ExtrinsicParameters(transform_matrix, idx))
+            extrinsics.append(ExtrinsicParameters(transform_matrix, idx, to_fix=to_fix))
         self.extrinsics = np.array(extrinsics)
 
     @property

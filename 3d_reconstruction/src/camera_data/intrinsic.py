@@ -79,10 +79,17 @@ class IntrinsicParameters:
         self.matrix = np.array(matrix)
 
     @__init__.register
-    def _(self, json_path: str) -> None:
-        with open(json_path, 'r') as f:
-            data = json.load(f)
-        self.matrix = np.array(data['K'])
+    def _(self, path: str) -> None:
+        if path.endswith('.json'):
+            with open(path, 'r') as f:
+                data = json.load(f)
+            self.matrix = np.array(data['K'])
+        elif path.endswith('.txt'): 
+            data = np.loadtxt(path)
+            self.matrix = data
+        else:
+            raise ValueError("Unsupported file format. Use a .json or .txt file.")
+            
 
     
     @property

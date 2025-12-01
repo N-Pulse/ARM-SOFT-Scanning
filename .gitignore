@@ -83,6 +83,9 @@ dataset_d60/
 PrusaProjects/
 MK3_GCodes/
 
+cdr/
+pdr/
+
 # Allow committing specific calibration matrix despite general 'output/' ignore
 !3d_reconstruction/
 !3d_reconstruction/figures/

@@ -1,3 +1,6 @@
+# ================================================================
+# 0. Section: Imports
+# ================================================================
 import cv2
 import os
 
@@ -6,6 +9,11 @@ import numpy as np
 from dataclasses import dataclass
 from functools import singledispatchmethod
 
+
+
+# ================================================================
+# 1. Section: Scan Container Classes
+# ================================================================
 @dataclass
 class Scan:
     """
@@ -91,6 +99,11 @@ class Scan:
     def shape(self) -> tuple[int, int]:
         return self.scan.shape
 
+
+
+# ================================================================
+# 2. Section: Scans Container Class
+# ================================================================
 @dataclass
 class Scans:
     """

@@ -68,9 +68,9 @@ class CamerasData:
         self.extrinsics = extrinsics
 
     @__init__.register
-    def _(self, intrinsic_path: str, extrinsics_path: str) -> None:
+    def _(self, intrinsic_path: str, extrinsics_path: str, to_fix: bool = True) -> None:
         self.intrinsic = IntrinsicParameters(intrinsic_path)
-        self.extrinsics = ExtrinsicGroup(extrinsics_path)
+        self.extrinsics = ExtrinsicGroup(extrinsics_path, to_fix=to_fix)
 
     @property
     def K(self) -> IntrinsicParameters:
